@@ -1,0 +1,43 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=asdf1234ASDF!
+    ports:
+      - "1433:1433"
+    restart: unless-stopped
+
+  init-db:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - sqlserver
+    entrypoint: >
+      bash -c '
+        echo "Aguardando o SQL Server inicializar..."
+        MAX_TRIES=50
+        COUNT=1
+        
+        while [ "$COUNT" -le "$MAX_TRIES" ]; do
+          echo "Tentativa $COUNT de $MAX_TRIES..."
+          
+          if /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "asdf1234ASDF!" -Q "SELECT 1" &> /dev/null; then
+            echo "SQL Server está pronto para conexões!"
+            break
+          fi
+          
+          echo "SQL Server ainda não está pronto, aguardando 5 segundos..."
+          sleep 5
+          COUNT=$((COUNT+1))
+        done
+        
+        if [ "$COUNT" -gt "$MAX_TRIES" ]; then
+          echo "Não foi possível conectar ao SQL Server após $MAX_TRIES tentativas."
+          exit 1
+        fi
+        
+        echo "Executando script de inicialização..."
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "asdf1234ASDF!" -d master -i /docker-entrypoint-initdb.d/init.sql
+      '
+    volumes:
+      - ./bd/sqlserver/init-scripts:/docker-entrypoint-initdb.d
