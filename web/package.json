@@ -1,0 +1,13 @@
+{
+  "name": "product-manager-web",
+  "version": "1.0.0",
+  "description": "Product Manager Web Interface",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/index.css --minify"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2"
+  }
+}

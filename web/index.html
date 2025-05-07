@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Produtos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/css/index.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Gerenciador de Produtos</h1>
+        
+        <!-- Formulário de Cadastro/Edição -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4" id="formTitle">Adicionar Novo Produto</h2>
+            <form id="productForm" class="space-y-4">
+                <input type="hidden" id="productId">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="code" class="block text-sm font-medium text-gray-700">Código</label>
+                        <input type="text" id="code" name="code" required 
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
+                        <input type="text" id="name" name="name" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Preço</label>
+                        <input type="text" id="price" name="price" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                               onkeyup="applyCurrencyMask(this)"
+                               onblur="applyCurrencyMask(this)"
+                               placeholder="0,00">
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <div class="flex items-center h-5">
+                            <input id="isActive" name="isActive" type="checkbox" checked
+                                   class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="isActive" class="ml-2 block text-sm text-gray-700">
+                                Ativo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+                    <textarea id="description" name="description" rows="3"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelEdit" class="hidden bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        Salvar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Lista de Produtos -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Lista de Produtos</h2>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Pesquisar..."
+                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Produtos serão inseridos aqui via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/controller.js"></script>
+    <script>
+        // Initialize price field with mask
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.getElementById('price');
+            if (priceInput) {
+                priceInput.addEventListener('keyup', function() {
+                    applyCurrencyMask(this);
+                });
+                priceInput.addEventListener('blur', function() {
+                    applyCurrencyMask(this);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
