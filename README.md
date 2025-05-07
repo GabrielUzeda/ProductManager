@@ -1,77 +1,149 @@
-# Product Manager API
+# Gerenciador de Produtos
 
-API para gerenciamento de produtos com operações CRUD e pesquisa.
+Aplicação web completa para gerenciamento de produtos com interface intuitiva e responsiva, construída com arquitetura moderna e escalável.
 
-## Requisitos
+## Funcionalidades
 
-- Docker e Docker Compose
-- .NET 8.0 SDK
+- Cadastro de produtos com código, nome, descrição e preço
+- Edição e exclusão de produtos
+- Pesquisa em tempo real
+- Validação de formulários
+- Interface responsiva com Tailwind CSS
+- Formatação automática de valores monetários (R$)
+- Notificações de sucesso/erro
+- CRUD completo via API REST
 
-## Configuração
+## Arquitetura
 
-1. **Banco de Dados**
-   - A aplicação utiliza SQL Server rodando em um contêiner Docker
-   - O script de inicialização do banco de dados está em `bd/sqlserver/init-scripts/init.sql`
+O projeto segue uma arquitetura limpa (Clean Architecture) com as seguintes camadas:
 
-2. **Variáveis de Ambiente**
-   - As configurações de conexão com o banco de dados estão em `src/API/ProductManager.API/appsettings.json`
-   - Credenciais padrão do SQL Server:
-     - Usuário: sa
-     - Senha: asdf1234ASDF!
-     - Porta: 1433
-     - Nome do banco: ProductManagerDb
+- **API**: Backend em .NET Core 8
+  - Controllers RESTful
+  - Validação de dados
+  - Tratamento de erros
+  - Documentação Swagger
+
+- **Application**: Lógica de negócios
+  - Handlers para comandos e consultas
+  - Validações de negócio
+  - DTOs e mapeamentos
+
+- **Domain**: Modelos de domínio
+  - Entidades
+  - Interfaces de repositório
+  - Exceções de domínio
+
+- **Infrastructure**: Implementações de infraestrutura
+  - Entity Framework Core
+  - Repositórios
+  - Configurações do banco de dados
+
+- **Web**: Interface do usuário
+  - HTML5 semântico
+  - Tailwind CSS para estilização
+  - JavaScript/jQuery para interatividade
+  - Responsividade para todos os dispositivos
+
+## Tecnologias
+
+- **Backend**:
+  - .NET 8
+  - Entity Framework Core
+  - SQL Server
+  - Docker
+
+- **Frontend**:
+  - HTML5
+  - Tailwind CSS
+  - JavaScript (ES6+)
+  - jQuery
+  - SweetAlert2 para notificações
+
+
+### Banco de Dados
+
+- **Servidor**: SQL Server 2019 (Docker)
+- **Porta**: 1433
+- **Usuário**: sa
+- **Senha**: asdf1234ASDF!
+- **Banco de Dados**: ProductManagerDb
 
 ## Executando a Aplicação
 
-1. **Iniciar o SQL Server**
+### Usando Docker (Recomendado)
+
+1. **Iniciar todos os serviços**
    ```bash
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
-2. **Executar a aplicação**
+2. **Acessar a aplicação**
+   - Interface Web: [http://localhost:80](http://localhost:80)
+   - API: [http://localhost:5006](http://localhost:5006)
+   - Banco de Dados: localhost,1433
+
+### Desenvolvimento Local
+
+1. **Iniciar o SQL Server**
+   ```bash
+   docker-compose up -d sqlserver init-db
+   ```
+
+2. **Executar a API**
    ```bash
    cd src/API/ProductManager.API
    dotnet run
    ```
 
-   A aplicação estará disponível em: `http://localhost:5006`
+3. **Executar o frontend**
+   ```bash
+   cd web
+   npx http-server -p 3000
+   ```
 
-## Endpoints da API
+4. **Acessar**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - API: [http://localhost:5006](http://localhost:5006)
 
-### Listar todos os produtos ativos
+## Documentação da API
+
+### Produtos
+
+#### Listar todos os produtos
 ```
 GET /api/Products
 ```
 
-### Buscar produto por ID
+#### Buscar produto por ID
 ```
 GET /api/Products/{id}
 ```
 
-### Pesquisar produtos
+#### Pesquisar produtos
 ```
 GET /api/Products/search?term={termo}
 ```
 
-### Criar novo produto
+#### Criar produto
 ```
 POST /api/Products
 ```
-Exemplo de corpo da requisição:
+**Request Body:**
 ```json
 {
   "code": "P001",
   "name": "Produto Teste",
   "description": "Descrição do produto",
-  "price": 100.00
+  "price": 100.50,
+  "isActive": true
 }
 ```
 
-### Atualizar produto
+#### Atualizar produto
 ```
 PUT /api/Products/{id}
 ```
-Exemplo de corpo da requisição:
+**Request Body:**
 ```json
 {
   "id": 1,
