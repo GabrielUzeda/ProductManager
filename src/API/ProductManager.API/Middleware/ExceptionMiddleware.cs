@@ -29,20 +29,36 @@ namespace ProductManager.API.Middleware
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
+            
+            if (exception is KeyNotFoundException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                var notFoundResponse = new
+                {
+                    status = context.Response.StatusCode,
+                    message = exception.Message,
+                    details = "O recurso solicitado não foi encontrado."
+                };
+                
+                var notFoundResult = JsonSerializer.Serialize(notFoundResponse);
+                await context.Response.WriteAsync(notFoundResult);
+                return;
+            }
+            
+            // Para outros tipos de exceção, retornar erro 500
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
             var response = new
             {
                 status = context.Response.StatusCode,
                 message = "Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde.",
                 details = exception.Message
             };
-
+            
             var result = JsonSerializer.Serialize(response);
-            return context.Response.WriteAsync(result);
+            await context.Response.WriteAsync(result);
         }
     }
 }

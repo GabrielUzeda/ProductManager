@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "nBEvj2br4baXu7E6Nw0Ne8Cb+NKMu1Cp+8SeMU7FwXfbjfoejso8JuKbbCcy1G3FhH66LvTaZrYF9q6R9leFIQ==",
+  "dgSpecHash": "+vojrqOvPs7o3mf5T78GaQYB5RwKZTJ4ODeKM9Vt9K9rxm4SYBXpoZtmwtswIy7TBmx+ncLFQF4AQnHzcXodqg==",
   "success": true,
   "projectFilePath": "/home/gsuzeda/Projects/ProductManager/src/API/ProductManager.API/ProductManager.API.csproj",
   "expectedPackageFiles": [

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,12 +25,27 @@ namespace ProductManager.Infrastructure.Repositories
 
         public async Task<Product> GetByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+            }
+            return product;
         }
 
         public async Task<Product> GetByCodeAsync(string code)
         {
-            return await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentException("Code cannot be null or whitespace.", nameof(code));
+            }
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
+            if (product == null)
+            {
+                throw new KeyNotFoundException($"Product with code '{code}' not found.");
+            }
+            return product;
         }
 
         public async Task AddAsync(Product product)

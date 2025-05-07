@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VwVLlVjlS7By5piz1yB/Hz2dEcKx7KIXBHy1ayaxPX2QWJb0X6B9kBgq6gkVStb6NCvv4ghRzU9GAueyaK5Ehw==",
+  "dgSpecHash": "ybz0MSVGPqxa1b1jfwQbNNKsNjhanjAWmlzbuYnK5o2+qnsjEr7C3m5S6oRrajznDZBG3elkEleuhOlzkkjx2w==",
   "success": true,
   "projectFilePath": "/home/gsuzeda/Projects/ProductManager/src/Application/ProductManager.Application/ProductManager.Application.csproj",
   "expectedPackageFiles": [

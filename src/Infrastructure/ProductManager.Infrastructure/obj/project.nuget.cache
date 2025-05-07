@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Va5g2AS3ZKof7KA02lz67OOcGJShOuIf6vrIiv4iLRKLIdODRB89riqlh+YoShy3Z4wafcTs/NH4vqHHpqN9Yw==",
+  "dgSpecHash": "r7kOG76cfBN1BV29w2AS0quJUFokYiQIZFKu5y+l1l8GFkv1cRplww5QsL2k4hCNHRRbw0bypAMAzJbVvfTpNg==",
   "success": true,
   "projectFilePath": "/home/gsuzeda/Projects/ProductManager/src/Infrastructure/ProductManager.Infrastructure/ProductManager.Infrastructure.csproj",
   "expectedPackageFiles": [
