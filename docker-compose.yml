@@ -1,12 +1,19 @@
+networks:
+  productmanager_default:
+    driver: bridge
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=asdf1234ASDF!
+      - MSSQL_PID=Express
     ports:
       - "1433:1433"
     restart: unless-stopped
+    networks:
+      - productmanager_default
 
   init-db:
     image: mcr.microsoft.com/mssql-tools
@@ -21,7 +28,7 @@ services:
         while [ "$COUNT" -le "$MAX_TRIES" ]; do
           echo "Tentativa $COUNT de $MAX_TRIES..."
           
-          if /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "asdf1234ASDF!" -Q "SELECT 1" &> /dev/null; then
+          if /opt/mssql-tools/bin/sqlcmd -S sqlserver,1433 -U sa -P "asdf1234ASDF!" -Q "SELECT 1" &> /dev/null; then
             echo "SQL Server está pronto para conexões!"
             break
           fi
@@ -37,7 +44,38 @@ services:
         fi
         
         echo "Executando script de inicialização..."
-        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "asdf1234ASDF!" -d master -i /docker-entrypoint-initdb.d/init.sql
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver,1433 -U sa -P "asdf1234ASDF!" -d master -i /docker-entrypoint-initdb.d/init.sql
       '
     volumes:
       - ./bd/sqlserver/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - productmanager_default
+
+  api:
+    build:
+      context: .
+      dockerfile: src/API/ProductManager.API/Dockerfile
+    ports:
+      - "5006:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ProductManagerDb;User Id=sa;Password=asdf1234ASDF!;TrustServerCertificate=True;Trusted_Connection=False;MultipleActiveResultSets=true;
+    depends_on:
+      - sqlserver
+    restart: unless-stopped
+    networks:
+      - productmanager_default
+
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/nginx.conf:/etc/nginx/nginx.conf
+      - ./web:/usr/share/nginx/html
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - productmanager_default

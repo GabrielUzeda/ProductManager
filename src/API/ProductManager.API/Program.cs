@@ -63,19 +63,37 @@ try
 
     app.MapControllers();
 
-    // Aplicar migrações do banco de dados
+    // Aplicar migrações do banco de dados apenas se o banco de dados não existir
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
-            await context.Database.MigrateAsync();
-            Log.Information("Migrações do banco de dados aplicadas com sucesso.");
+            
+            // Verificar se o banco de dados já existe
+            if (await context.Database.CanConnectAsync())
+            {
+                Log.Information("Banco de dados já existe. Pulando migrações.");
+            }
+            else
+            {
+                Log.Information("Banco de dados não encontrado. Aplicando migrações...");
+                try
+                {
+                    await context.Database.MigrateAsync();
+                    Log.Information("Migrações do banco de dados aplicadas com sucesso.");
+                }
+                catch (Exception migrateEx) when (migrateEx.Message.Contains("There is already an object named"))
+                {
+                    // Ignorar erros de tabelas já existentes
+                    Log.Warning(migrateEx, "Algumas tabelas já existem no banco de dados. Continuando...");
+                }
+            }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Ocorreu um erro ao aplicar as migrações do banco de dados.");
+            Log.Error(ex, "Ocorreu um erro ao verificar/aplicar as migrações do banco de dados.");
         }
     }
 
